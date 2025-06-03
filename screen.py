@@ -10,7 +10,7 @@ APPLES = {
 
 def detect_apples():
     """
-    it takes screenshot of the current screen, and returns all detected apples with its value and coordinate.
+    takes screenshot of the current screen, and returns all detected apples with its value and coordinate.
     """
     detected_apples = []
     for i, apple in APPLES.items():
@@ -19,20 +19,36 @@ def detect_apples():
 
     return detected_apples
 
-def apples_to_arr(detected_apples):
+def parse_detected_apples(detected_apples):
+    """
+    takes list of detected apples of format ((x, y, w, h), apple_value)
+    returns two 2d numpy array representing the apples on the board, and coordinates of each apple's center.  
+    """
     assert len(detected_apples) == 170
 
     # each element is ((x, y, w, h), apple_value)
     sorted_detected_apples = sorted(detected_apples, key=lambda x: (x[0][1], x[0][0])) # sort by y first, then by x
     apples_list = [a[1] for a in sorted_detected_apples]
+    coords_list = [a[0][:2] for a in sorted_detected_apples]
+    wh_list = [a[0][2:] for a in sorted_detected_apples]
 
     apples_arr = np.array(apples_list, dtype=np.uint8).reshape(10, 17)
-    return apples_arr
+    coords_arr = np.array(coords_list, dtype=np.int32)
+    wh_arr = np.array(wh_list, dtype=np.int32)
+    center_coords_arr = (coords_arr + wh_arr/2).reshape(10, 17, -1)
+    
+    return apples_arr, center_coords_arr
+
+def parse_screen():
+    apples = detect_apples()
+    apples_arr, center_coords_arr = parse_detected_apples(apples)
+
+    return apples_arr, center_coords_arr
     
 
 if __name__ == '__main__':    
     detected_apples = detect_apples()
-    apples_arr = apples_to_arr(detected_apples)
+    apples_arr, _ = parse_detected_apples(detected_apples)
 
     # print(apples_arr)
     os.makedirs('./test_case', exist_ok=True)
