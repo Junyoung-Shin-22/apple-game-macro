@@ -2,6 +2,7 @@ import pyautogui
 from PIL import Image
 
 import numpy as np
+import os
 
 APPLES = {
     i: Image.open(f'./src/apples/{i}.png') for i in range(1, 10)
@@ -33,4 +34,6 @@ if __name__ == '__main__':
     detected_apples = detect_apples()
     apples_arr = apples_to_arr(detected_apples)
 
-    print(apples_arr)
+    # print(apples_arr)
+    os.makedirs('./test_case', exist_ok=True)
+    np.savetxt('test_case/case_01.txt', apples_arr, fmt='%d' ,delimiter=' ')
