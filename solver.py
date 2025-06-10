@@ -52,11 +52,10 @@ def greedy_solver(apples_arr):
         move = find_first_available_move(apples_arr)
         if move is None: break
 
-        i, k, j, l = move
+        solution.append(move)
 
-        solution.append((i, k, j, l))
+        i, k, j, l = move
         score += (apples_arr[i:k, j:l] != 0).sum() # increse score by number of removed apples
-        
         apples_arr[i:k, j:l] = 0 # fill selected area to 0
     
     return dict(solution=solution, score=score)
@@ -81,7 +80,17 @@ def dfs_solver(apples_arr):
         for move in moves:
             apples_arr_next = apples_arr.copy()
 
+            i, k, j, l = move
+            score_to_add = apples_arr_next[i:k, j:l]
+            apples_arr_next[i:k, j:l] = 0
 
+            res = _dfs(apples_arr_next, solution=solution+[move,], score=score+score_to_add, depth=depth+1)
+
+            if res['score'] > best_score:
+                best_solution = res['solution']
+                best_score = res['score']
+        
+        return dict(solution=best_solution, score=best_score)
     
     res = _dfs(apples_arr)
     return res
