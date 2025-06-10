@@ -11,24 +11,24 @@ def find_first_available_box_index(apples_arr):
                     if box.sum() == 10: return (i, k, j, l)
                     if box.sum() > 10 : break
 
-def greedy_solver(apples_box):
-    apples_box = apples_box.copy()
+def greedy_solver(apples_arr):
+    apples_arr = apples_arr.copy()
     score = 0
     solution = []
 
     while True:
-        box_index = find_first_available_box_index(apples_box)
+        box_index = find_first_available_box_index(apples_arr)
         if box_index is None: break
 
         i, k, j, l = box_index
         # optimize move: skip zero area
-        _box = apples_box[i:k, j:l]
+        _box = apples_arr[i:k, j:l]
         nonzero_i, nonzero_j = _box.nonzero()
         i, j = i+nonzero_i.min(), j+nonzero_j.min()
 
         solution.append((i, k, j, l))
-        score += (apples_box[i:k, j:l] != 0).sum() # increse score by number of removed apples
-        apples_box[i:k, j:l] = 0 # fill selected area to 0
+        score += (apples_arr[i:k, j:l] != 0).sum() # increse score by number of removed apples
+        apples_arr[i:k, j:l] = 0 # fill selected area to 0
     
     return dict(solution=solution, score=score)
 
