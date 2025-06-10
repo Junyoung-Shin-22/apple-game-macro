@@ -22,12 +22,12 @@ def main(target_score):
         x1, y1 = coords_arr[i1, j1]
         x2, y2 = coords_arr[i2-1, j2-1]
 
-        x1, y1 = x1 - 15, y1 - 15
-        x2, y2 = x2 + 15, y2 + 15
-        d = ((x1-x2)**2 + (y1-y2)**2) ** 0.5
+        x1, y1 = x1 - 20, y1 - 20
+        x2, y2 = x2 + 20, y2 + 20
+        d = ((x1-x2)**2 + (y1-y2)**2) ** 0.25
 
         pyautogui.moveTo(x1, y1, duration=0.1)
-        pyautogui.dragTo(x2, y2, d/100, button='left')
+        pyautogui.dragTo(x2, y2, d/15, button='left')
         # print(x1, y1, x2, y2, d)
 
 if __name__ == '__main__':
