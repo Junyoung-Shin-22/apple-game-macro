@@ -1,19 +1,19 @@
 import numpy as np
 
-def _optimize_index(apples_arr, index):
+def _optimize_move(apples_arr, move):
     """
-    optimizing index by removing preceding zeros area.
+    optimizing move by removing preceding zeros area.
     """
 
-    i, k, j, l = index
+    i, k, j, l = move
     
     box = apples_arr[i:k, j:l]
     nonzero_i, nonzero_j = box.nonzero()
     i, j = i+nonzero_i.min(), j+nonzero_j.min()
 
-    return i, k, j, l
+    return (i, k, j, l)
 
-def find_first_available_box_index(apples_arr):
+def find_first_available_move(apples_arr):
     h, w = apples_arr.shape
 
     for i in range(h):
@@ -22,13 +22,13 @@ def find_first_available_box_index(apples_arr):
                 for l in range(j, w+1):
                     box = apples_arr[i:k, j:l]
                     if box.sum() == 10: 
-                        optimized_index = _optimize_index(apples_arr, (i, k, j, l))
-                        return optimized_index
+                        optimized_move = _optimize_move(apples_arr, (i, k, j, l))
+                        return optimized_move
                     if box.sum() > 10 : break
 
-def find_all_available_box_indices(apples_arr):
+def find_all_available_moves(apples_arr):
     h, w = apples_arr.shape
-    box_indices = []
+    moves = []
 
     for i in range(h):
         for j in range(w):
@@ -36,23 +36,23 @@ def find_all_available_box_indices(apples_arr):
                 for l in range(j, w+1):
                     box = apples_arr[i:k, j:l]
                     if box.sum() == 10: 
-                        optimized_index = _optimize_index(apples_arr, (i, k, j, l))
-                        if optimized_index not in box_indices:
-                            box_indices.append(optimized_index)
+                        optimized_move = _optimize_move(apples_arr, (i, k, j, l))
+                        if optimized_move not in moves:
+                            moves.append(optimized_move)
                     if box.sum() > 10 : break
     
-    return box_indices
+    return moves
 
 def greedy_solver(apples_arr):
     apples_arr = apples_arr.copy()
-    score = 0
     solution = []
+    score = 0
 
     while True:
-        box_index = find_first_available_box_index(apples_arr)
-        if box_index is None: break
+        move = find_first_available_move(apples_arr)
+        if move is None: break
 
-        i, k, j, l = box_index
+        i, k, j, l = move
 
         solution.append((i, k, j, l))
         score += (apples_arr[i:k, j:l] != 0).sum() # increse score by number of removed apples
@@ -62,10 +62,29 @@ def greedy_solver(apples_arr):
     return dict(solution=solution, score=score)
 
 def dfs_solver(apples_arr):
+    visited = set()
+
     def _dfs(apples_arr, solution=[], score=0, depth=0):
-        pass
+        state = hash(str(apples_arr))
+        if state in visited: # if this state is already visited
+            return dict(solution=[], score=0)
+        else:
+            visited.add(state)
+        
+        moves = find_all_available_moves(apples_arr)
+        if not moves: # if this state is "leaf"
+            return dict(solution=solution, score=score)
+        
+        # run dfs recursively
+        best_solution = None
+        best_score = 0
+        for move in moves:
+            apples_arr_next = apples_arr.copy()
+
+
     
-    pass
+    res = _dfs(apples_arr)
+    return res
 
 if __name__ == '__main__':
     test_case = np.loadtxt('./test_case/case_01.txt', dtype=np.uint8, delimiter=' ')
