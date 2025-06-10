@@ -74,7 +74,7 @@ def find_all_available_moves(apples_arr):
     
     return moves
 
-def dfs_solver(apples_arr):
+def dfs_solver(apples_arr, goal=120):
     visited = set()
     global_best_score = 0
 
@@ -98,7 +98,7 @@ def dfs_solver(apples_arr):
         moves = find_all_available_moves(_apples_arr)
 
         # treat leaf node
-        if not moves:
+        if score >= goal or not moves:
             return dict(solution=solution, score=score)
         
         moves.sort(key=lambda m: (m[1]-m[0])*(m[3]-m[2])) # heuristic: prefer smaller area
@@ -121,6 +121,9 @@ def dfs_solver(apples_arr):
             
             _apples_arr[i:k, j:l] = box
             pbar.set_description(f'depth: {depth}, best_score: {best_score}')
+
+            # early stopping
+            if best_score >= goal: break
         
         if best_score > global_best_score:
             global_best_score = best_score
