@@ -1,13 +1,20 @@
 import pyautogui
+import argparse
 
 from screen import parse_screen
-from solver import greedy_solver
+from solver import greedy_solver, dfs_solver
 
-def main():
+def main(target_score):
     apples_arr, coords_arr = parse_screen()
+    print(apples_arr)
 
-    output = greedy_solver(apples_arr)
+    # output = greedy_solver(apples_arr)
+    output = dfs_solver(apples_arr, target_score, verbose=True)
     solution, score = output['solution'], output['score']
+
+    print('[solution]')
+    for move in solution:
+        print(move)
 
     print(f'executing solution. score will be: {score}')
     for move in solution:
@@ -24,4 +31,8 @@ def main():
         # print(x1, y1, x2, y2, d)
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--target_score', '-t', type=int, default=100)
+    args = parser.parse_args()
+
+    main(target_score=args.target_score)

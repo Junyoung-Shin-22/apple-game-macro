@@ -74,7 +74,7 @@ def find_all_available_moves(apples_arr):
     
     return moves
 
-def dfs_solver(apples_arr, goal=120):
+def dfs_solver(apples_arr, target_score, verbose=True):
     visited = set()
     global_best_score = 0
 
@@ -98,7 +98,7 @@ def dfs_solver(apples_arr, goal=120):
         moves = find_all_available_moves(_apples_arr)
 
         # treat leaf node
-        if score >= goal or not moves:
+        if score >= target_score or not moves:
             return dict(solution=solution, score=score)
         
         moves.sort(key=lambda m: (m[1]-m[0])*(m[3]-m[2])) # heuristic: prefer smaller area
@@ -106,7 +106,7 @@ def dfs_solver(apples_arr, goal=120):
         # run dfs recursively
         best_solution = None
         best_score = 0
-        pbar = tqdm(moves, position=depth, desc=f'depth: {depth}, best_score: {best_score}', leave=False)
+        pbar = tqdm(moves, position=depth, desc=f'depth: {depth}, best_score: {best_score}', leave=False, disable=(not verbose))
         for move in pbar:
             i, k, j, l = move
             box = _apples_arr[i:k, j:l].copy()
@@ -123,7 +123,7 @@ def dfs_solver(apples_arr, goal=120):
             pbar.set_description(f'depth: {depth}, best_score: {best_score}')
 
             # early stopping
-            if best_score >= goal: break
+            if best_score >= target_score: break
         
         if best_score > global_best_score:
             global_best_score = best_score
