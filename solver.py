@@ -1,4 +1,5 @@
 import numpy as np
+from tqdm import tqdm
 
 def _optimize_move(apples_arr, move):
     """
@@ -64,7 +65,7 @@ def dfs_solver(apples_arr):
     visited = set()
 
     def _dfs(apples_arr, solution=[], score=0, depth=0):
-        state = hash(str(apples_arr))
+        state = hash(apples_arr.tobytes())
         if state in visited: # if this state is already visited
             return dict(solution=[], score=0)
         else:
@@ -77,11 +78,12 @@ def dfs_solver(apples_arr):
         # run dfs recursively
         best_solution = None
         best_score = 0
-        for move in moves:
+        pbar = tqdm(moves, position=depth, desc=f'depth: {depth}, best_score: {best_score}', leave=False)
+        for move in pbar:
             apples_arr_next = apples_arr.copy()
 
             i, k, j, l = move
-            score_to_add = apples_arr_next[i:k, j:l]
+            score_to_add = (apples_arr_next[i:k, j:l] != 0).sum()
             apples_arr_next[i:k, j:l] = 0
 
             res = _dfs(apples_arr_next, solution=solution+[move,], score=score+score_to_add, depth=depth+1)
@@ -89,6 +91,8 @@ def dfs_solver(apples_arr):
             if res['score'] > best_score:
                 best_solution = res['solution']
                 best_score = res['score']
+            
+            pbar.set_description(f'depth: {depth}, best_score: {best_score}')
         
         return dict(solution=best_solution, score=best_score)
     
@@ -101,4 +105,4 @@ if __name__ == '__main__':
 
     # box = find_first_available_box(test_case)
     # print(box)
-    print(greedy_solver(test_case))
+    print(dfs_solver(test_case))
